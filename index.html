@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOLAR-AI | پنل جامع فرماندهی عملیات و بهینه‌سازی نیروگاه خورشیدی</title>
+    <style>
+        :root {
+            --bg-main: #030712;
+            --panel-bg: rgba(15, 23, 42, 0.88);
+            --border-ui: #1e293b;
+            --accent-solar: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-cyan: #06b6d4;
+            --accent-blue: #3b82f6;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-light);
+            font-size: 12px;
+            overflow-x: hidden;
+        }
+
+        /* Top Header */
+        .header {
+            background: linear-gradient(90deg, #0f172a, #451a03, #0f172a);
+            border-bottom: 2px solid var(--accent-solar);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.15);
+        }
+
+        .header-title h1 {
+            font-size: 17px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-solar);
+            border: 1px solid var(--accent-solar);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            animation: pulse 1.6s infinite;
+        }
+
+        .author-tag {
+            font-size: 12px;
+            color: #cbd5e1;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-ui);
+        }
+
+        /* Main Grid */
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            gap: 12px;
+            padding: 12px;
+            min-height: calc(100vh - 150px);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-box {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-ui);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .panel-title {
+            border-bottom: 1px solid var(--border-ui);
+            padding-bottom: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--accent-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Radar & Thermal Scan */
+        .radar-frame {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            background: #020617;
+            border: 1px solid var(--border-ui);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        canvas#solarRadar {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .metric-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border-ui);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .metric-title {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        .metric-val {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 3px 0;
+        }
+
+        .metric-sub {
+            font-size: 10px;
+            color: var(--accent-green);
+        }
+
+        /* Interactive Buttons */
+        .btn-ctrl {
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-ctrl:hover {
+            background: #334155;
+            border-color: var(--accent-solar);
+        }
+
+        .btn-alert {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        .btn-alert:hover {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        /* Terminal Console */
+        .console-terminal {
+            background: #020617;
+            border: 1px solid var(--border-ui);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            height: 150px;
+            overflow-y: auto;
+            color: #38bdf8;
+            line-height: 1.4;
+        }
+
+        .log-row { margin-bottom: 3px; }
+        .log-warn { color: var(--accent-red); }
+        .log-ok { color: var(--accent-green); }
+
+        /* Engineering Math Boxes */
+        .math-code {
+            background: #020617;
+            border: 1px solid #1e293b;
+            padding: 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 10px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        /* Formal Legal & Protection Box */
+        .legal-banner {
+            background: #090d16;
+            border: 1px solid #334155;
+            border-right: 4px solid var(--accent-solar);
+            padding: 12px 18px;
+            margin: 12px;
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        .legal-banner h3 {
+            color: var(--accent-solar);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .footer {
+            background: #020617;
+            border-top: 1px solid var(--border-ui);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header">
+        <div class="header-title">
+            <h1>☀️ SOLAR-AI | پنل جامع فرماندهی عملیات و پایش نیروگاه خورشیدی</h1>
+            <span class="header-badge">HIL SIMULINK CONNECTED</span>
+        </div>
+        <div class="author-tag">
+            طراح و سرپرست مهندسی: <strong>حسین لعلیان؛ رتبه ۳۲ کنکور دکتری</strong>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main-container">
+
+        <!-- Left Controls & Crisis Injection -->
+        <div class="panel-box">
+            <div class="panel-title">
+                <span>کنترل لبه و تزریق سناریوهای بحرانی</span>
+                <span>[HIL-CORE]</span>
+            </div>
+
+            <p style="color: var(--text-dim); font-size: 11px;">
+                فرمان‌های اضطراری جهت اعتبارسنجی پایداری اینورترها و آرایه‌های فتوولتائیک:
+            </p>
+
+            <button class="btn-ctrl btn-alert" onclick="triggerEvent('HOTSPOT')">
+                🚨 هشدار رخداد نقطه داغ (Hot-Spot) و آتش‌سوزی پنل
+            </button>
+            <button class="btn-ctrl" style="border-color: var(--accent-solar); color: var(--accent-solar);" onclick="triggerEvent('SHADING')">
+                ⛅ سایه‌اندازی جزئی (Partial Shading) & مهار با ANFIS
+            </button>
+            <button class="btn-ctrl" onclick="triggerEvent('ISLANDING')">
+                ⚡ آزمون قطع شبکه سراسری (Anti-Islanding Defense)
+            </button>
+
+            <hr style="border-color: var(--border-ui); margin: 4px 0;">
+
+            <div class="panel-title">
+                <span>آزمون سیگنالینگ صوتی لبه سخت‌افزار</span>
+            </div>
+            
+            <div style="display: flex; gap: 6px;">
+                <button class="btn-ctrl" onclick="playSonarPing()">پالس MPPT (بوق سونار)</button>
+                <button class="btn-ctrl btn-alert" onclick="playWarningSiren()">آژیر خطای مشکوک</button>
+            </div>
+
+            <hr style="border-color: var(--border-ui); margin: 4px 0;">
+
+            <div class="panel-title">
+                <span>فرمولاسیون و الگوریتم‌های فعال</span>
+            </div>
+            <div class="math-code">
+                <strong>MPPT Optimization (PSO/GWO):</strong><br>
+                <code>v_{i}^{k+1} = w v_i^k + c_1 r_1 (pbest_i - x_i) + c_2 r_2 (gbest - x_i)</code><br>
+                <strong>ANFIS Neuro-Fuzzy Rule:</strong><br>
+                <code>If Irradiance is G and Temp is T then Duty_Cycle = f(G,T)</code>
+            </div>
+        </div>
+
+        <!-- Center: Radar, PV Array Scanning, & Telemetry -->
+        <div class="panel-box">
+            <div class="panel-title">
+                <span>رادار پایش حرارتی و عیب‌یابی بلادرنگ استرینگ‌های خورشیدی</span>
+                <span id="scanStatus" style="color: var(--accent-green);">روبش نرمال (30 FPS)</span>
+            </div>
+
+            <div class="radar-frame">
+                <canvas id="solarRadar"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">توان خروجی آنی آرایه‌ها (Instant Power)</div>
+                    <div class="metric-val" id="powerVal">۴٫۸۲ MW</div>
+                    <div class="metric-sub">راندمان MPPT: ۹۹.۴٪</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">شدت تابش خورشیدی (Irradiance)</div>
+                    <div class="metric-val" id="radVal">۹۴۵ W/m²</div>
+                    <div class="metric-sub">دمای سلول: ۴۱.۲ °C</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">تأخیر هم‌شبیه‌سازی HIL-Simulink</div>
+                    <div class="metric-val">۰٫۷۴ ms</div>
+                    <div class="metric-sub">ارتباط بی‌درنگ با کنترلر DSP</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">وضعیت اینورتر مرکزی و THD</div>
+                    <div class="metric-val" style="color: var(--accent-green);" id="thdVal">۱٫۲۸٪</div>
+                    <div class="metric-sub">تزریق پایدار به شبکه سراسری</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Intelligent Kernels & Live Console -->
+        <div class="panel-box">
+            <div class="panel-title">
+                <span>کنسول تله‌متری و رویدادهای لبه HIL</span>
+                <span>CONSOLE</span>
+            </div>
+
+            <div class="console-terminal" id="solarConsole">
+                <div class="log-row">[00:00:01] System Boot: Solar-AI Power Plant Engine Online.</div>
+                <div class="log-row log-ok">[00:00:02] Simulink Co-Sim Bridge: Active (Zero-Latency).</div>
+                <div class="log-row">[00:00:03] ANFIS Non-linear MPPT Estimator engaged.</div>
+            </div>
+
+            <div class="panel-title" style="margin-top: 6px;">
+                <span>وضعیت ماژول‌های محاسباتی</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
+                    <span>هسته هوشمند ANFIS:</span>
+                    <span style="color: var(--accent-green);">ردیابی حداکثر توان</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
+                    <span>الگوریتم فراابتکاری (PSO/GWO):</span>
+                    <span style="color: var(--accent-solar);">مهار سایه‌اندازی</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
+                    <span>لینک سخت‌افزار در حلقه (HIL):</span>
+                    <span style="color: var(--accent-green);">سنکرون کامل با FPGA</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; background: #020617; padding: 6px; border-radius: 4px;">
+                    <span>شبیه‌سازی دینامیکی Simulink:</span>
+                    <span style="color: var(--accent-cyan);">جریان بدون اتلاف</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Official Engineering & Legal Protection Banner -->
+    <div class="legal-banner">
+        <h3>بیانیه رسمی، ممانعت از کپی‌برداری و تعهدات پیاده‌سازی صنعتی:</h3>
+        <p>
+            به جهت ممانعت از کپی‌برداری غیرمجاز، حفاظت از مالکیت فکری و امنیت ساختارهای راهبردی کنترل توان، این پنل صرفاً به عنوان یک دموی عمومی با داده‌های محدود (Limited Demonstration) ارائه شده است.
+        </p>
+        <p style="margin-top: 4px; color: #cbd5e1;">
+            در صورت سفارش و عقد قرارداد اجرایی، این سامانه به طور اختصاصی بازطراحی و پیاده‌سازی خواهد شد تا با اتصال مستقیم و بلادرنگ به لبه‌های واقعی سخت‌افزاری (Hardware-in-the-Loop - HIL)، اینورترهای صنعتی، سنسورهای تابش‌سنجی، بسترهای مدل‌سازی دینامیکی <strong>Simulink/MATLAB</strong>، هسته‌های استنتاج عصبی-فازی <strong>ANFIS</strong> و بهینه‌سازهای پیشرفته فراابتکاری (<strong>Metaheuristics</strong>)، پاسخ کاملاً بهینه، بدون تاخیر و پایدار را در شرایط سخت آب‌وهوایی، سایه‌اندازی جزئی و گذر از خطاهای شبکه فراهم آورد.
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div>
+            طراحی و توسعه مهندسی: <strong>حسین لعلیان؛ رتبه ۳۲ کنکور دکتری</strong>
+        </div>
+        <div>
+            رایانامه رسمی ارتباطات صنعتی: <code style="color: var(--accent-solar); font-size: 12px;">ai.algorithms.ballistics@gmail.com</code>
+        </div>
+    </div>
+
+    <!-- Logic & Audio Scripts -->
+    <script>
+        // Web Audio Synthesizer (No external media dependency)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSonarPing() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(950, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.35);
+            addLog("MPPT_SWEEP: ردیابی بهینه توان با فرکانس ۹۵۰ هرتز انجام شد.", "log-ok");
+        }
+
+        function playWarningSiren() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(1400, audioCtx.currentTime + 0.6);
+            gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+            addLog("WARNING_ALERT: ناهنجاری حرارتی/جریانی در آرایه شناسایی شد!", "log-warn");
+        }
+
+        function addLog(msg, cssClass = "") {
+            const consoleBox = document.getElementById("solarConsole");
+            const time = new Date().toLocaleTimeString('fa-IR');
+            const entry = document.createElement("div");
+            entry.className = `log-row ${cssClass}`;
+            entry.innerText = `[${time}] ${msg}`;
+            consoleBox.appendChild(entry);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        // Radar Canvas Loop
+        const canvas = document.getElementById('solarRadar');
+        const ctx = canvas.getContext('2d');
+        let sweepAngle = 0;
+
+        function resizeRadar() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeRadar);
+        resizeRadar();
+
+        function renderRadar() {
+            const w = canvas.width;
+            const h = canvas.height;
+            const cX = w / 2;
+            const cY = h / 2;
+            const r = Math.min(w, h) / 2 - 12;
+
+            ctx.fillStyle = 'rgba(2, 6, 23, 0.25)';
+            ctx.fillRect(0, 0, w, h);
+
+            // Polar Grid
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            for (let i = r / 3; i <= r; i += r / 3) {
+                ctx.beginPath();
+                ctx.arc(cX, cY, i, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Radar Ray
+            ctx.beginPath();
+            ctx.moveTo(cX, cY);
+            ctx.lineTo(cX + r * Math.cos(sweepAngle), cY + r * Math.sin(sweepAngle));
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            sweepAngle += 0.04;
+            requestAnimationFrame(renderRadar);
+        }
+        renderRadar();
+
+        // Scenario Injections
+        function triggerEvent(type) {
+            playWarningSiren();
+            if(type === 'HOTSPOT') {
+                addLog("CRISIS: نقطه داغ (Hot-Spot) در استرینگ شماره ۰۴ کشف شد. ایزوله‌سازی شاخه با سوئیچینگ سریع...", "log-warn");
+                document.getElementById('thdVal').innerText = "۴٫۱۲٪";
+                document.getElementById('thdVal').style.color = "var(--accent-red)";
+            } else if(type === 'SHADING') {
+                addLog("MPPT_SHIFT: ورود سایه ابر موضعی. اجرای الگوریتم فراابتکاری PSO برای پیدا کردن بیشینه سراسری.", "log-ok");
+                document.getElementById('powerVal').innerText = "۳٫۱۰ MW";
+            } else if(type === 'ISLANDING') {
+                addLog("SAFETY: افت ولتاژ شبکه شناسایی شد. پروتکل پدافندی Anti-Islanding فعال گردید.", "log-warn");
+            }
+        }
+    </script>
+</body>
+</html>
