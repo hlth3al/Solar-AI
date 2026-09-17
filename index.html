@@ -6,130 +6,461 @@
     <title>SOLAR-AI | سامانه جامع پایش و کنترل نیروگاه خورشیدی</title>
     <style>
         :root {
-            --bg-main: #020617;
-            --panel-bg: rgba(15, 23, 42, 0.9);
-            --border-ui: #1e293b;
-            --accent-solar: #f59e0b;
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-gold: #f59e0b;
+            --accent-cyan: #06b6d4;
             --accent-green: #10b981;
             --accent-red: #ef4444;
-            --accent-blue: #38bdf8;
-            --text-light: #f8fafc;
-            --text-dim: #94a3b8;
+            --text-main: #f3f4f6;
+            --text-dim: #9ca3af;
+            --border-color: #30363d;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-light); font-size: 13px; padding: 15px; line-height: 1.6; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        .header { background: #0f172a; border: 1px solid var(--accent-solar); border-radius: 8px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .header h1 { font-size: 18px; color: var(--accent-solar); }
-        .badge { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
 
-        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
+        .container {
+            width: 100%;
+            max-width: 950px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
 
-        .card { background: var(--panel-bg); border: 1px solid var(--border-ui); border-radius: 8px; padding: 15px; }
-        .card-title { font-size: 14px; font-weight: bold; color: var(--accent-blue); margin-bottom: 12px; border-bottom: 1px solid var(--border-ui); padding-bottom: 6px; }
-
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .metric-box { background: #020617; border: 1px solid var(--border-ui); padding: 10px; border-radius: 6px; }
-        .metric-box span { font-size: 11px; color: var(--text-dim); display: block; }
-        .metric-box strong { font-size: 17px; color: #fff; display: block; margin-top: 4px; }
-
-        .btn { background: #1e293b; color: #fff; border: 1px solid #334155; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; margin-bottom: 8px; text-align: right; font-size: 12px; transition: 0.2s; }
-        .btn:hover { border-color: var(--accent-solar); background: #334155; }
-        .btn-danger { border-color: var(--accent-red); color: #fca5a5; }
-
-        .console { background: #020617; border: 1px solid var(--border-ui); border-radius: 6px; padding: 10px; height: 140px; overflow-y: auto; font-family: monospace; font-size: 11px; color: #38bdf8; }
-
-        /* Legal Box Style */
-        .legal-box {
-            background: rgba(15, 23, 42, 0.95);
-            border: 1px solid var(--accent-solar);
-            border-right: 4px solid var(--accent-solar);
+        /* هدر داشبورد */
+        .header {
+            background: linear-gradient(135deg, #1f2937, #111827);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
             padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            color: #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 1.35rem;
+            color: #fbbf24;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.7; }
+        }
+
+        /* بخش تله‌متری و شاخص‌ها */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-gold);
+        }
+
+        .card.cyan::before { background-color: var(--accent-cyan); }
+        .card.green::before { background-color: var(--accent-green); }
+        .card.red::before { background-color: var(--accent-red); }
+
+        .card-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .card-value {
+            font-size: 1.55rem;
+            font-weight: bold;
+            color: #ffffff;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .card-sub {
+            font-size: 0.78rem;
+            color: var(--accent-green);
+        }
+
+        /* پنل وضعیت اینورتر و هارمونیک */
+        .section-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .terminal-box {
+            background-color: #090d13;
+            border: 1px solid #21262d;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: #58a6ff;
+            line-height: 1.6;
+            direction: ltr;
+            text-align: left;
+        }
+
+        /* بخش هشدار رسمی و کپی‌برداری */
+        .notice-card {
+            background: rgba(239, 68, 68, 0.06);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 16px;
+            color: #fca5a5;
+            font-size: 0.88rem;
             line-height: 1.7;
         }
-        .legal-box h3 { color: var(--accent-solar); margin-bottom: 10px; font-size: 15px; }
-        .legal-box p { margin-bottom: 10px; }
 
-        .footer-card { background: #090d16; border: 1px solid var(--border-ui); padding: 15px 20px; border-radius: 6px; }
-        .footer-card code { color: var(--accent-solar); font-size: 14px; font-weight: bold; }
+        .notice-card h3 {
+            color: #f87171;
+            font-size: 0.98rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* شناسنامه رسمی */
+        .identity-box {
+            background: #111827;
+            border: 1px solid #374151;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            font-size: 0.88rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+
+        .identity-box b {
+            color: #fbbf24;
+        }
+
+        .identity-box .contact {
+            color: var(--accent-cyan);
+            font-family: monospace;
+            direction: ltr;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        /* استایل ۵ دکمه تعاملی (آکاردئونی) */
+        .interactive-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .accordion-btn {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            border-right: 4px solid var(--accent-gold);
+            color: #f1f5f9;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.25s ease;
+            width: 100%;
+        }
+
+        .accordion-btn:hover {
+            background: linear-gradient(90deg, #334155, #1e293b);
+            border-right-color: #38bdf8;
+            transform: translateX(-3px);
+        }
+
+        .accordion-content {
+            display: none;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-top: none;
+            padding: 16px 20px;
+            border-radius: 0 0 8px 8px;
+            font-size: 0.88rem;
+            line-height: 1.85;
+            color: #cbd5e1;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .accordion-content h4 {
+            color: #f59e0b;
+            margin: 12px 0 6px 0;
+            font-size: 0.95rem;
+        }
+
+        .accordion-content p, .accordion-content li {
+            margin-bottom: 8px;
+        }
+
+        .accordion-content ul {
+            padding-right: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-icon {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            transition: transform 0.25s ease;
+        }
+
+        .active .btn-icon {
+            transform: rotate(90deg);
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>☀️ SOLAR-AI | سامانه جامع پایش و کنترل نیروگاه خورشیدی</h1>
-        <span class="badge">HIL SIMULINK CONNECTED</span>
-    </div>
+<div class="container">
 
-    <div class="grid-container">
+    <!-- هدر -->
+    <header class="header">
+        <div class="header-title">
+            <span style="font-size: 1.6rem;">☀️</span>
+            <h1>SOLAR-AI | سامانه جامع پایش و کنترل نیروگاه خورشیدی</h1>
+        </div>
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            HIL SIMULINK CONNECTED
+        </div>
+    </header>
+
+    <!-- تله‌متری بلادرنگ -->
+    <div class="grid-cards">
         <div class="card">
-            <div class="card-title">پایش تله‌متری و بازده آرایه‌ها</div>
-            <div class="metrics-grid">
-                <div class="metric-box">
-                    <span>توان تولیدی کل:</span>
-                    <strong id="pwr">۴٫۸۵ MW</strong>
-                </div>
-                <div class="metric-box">
-                    <span>شدت تابش خورشید:</span>
-                    <strong>۹۶۰ W/m²</strong>
-                </div>
-                <div class="metric-box">
-                    <span>دمای میانگین سلول‌ها:</span>
-                    <strong>۴۲.۵ °C</strong>
-                </div>
-                <div class="metric-box">
-                    <span>الگوریتم ردیابی MPPT:</span>
-                    <strong style="color: var(--accent-green);">ANFIS فعال</strong>
-                </div>
-            </div>
-            <div style="background: #020617; border: 1px solid var(--border-ui); padding: 10px; border-radius: 6px; margin-top: 10px;">
-                <span style="font-size: 11px; color: var(--text-dim);">وضعیت پایداری اینورتر و هارمونیک THD:</span>
-                <div style="font-size: 15px; font-weight: bold; color: var(--accent-green); margin-top: 4px;">۱٫۱۸٪</div>
-            </div>
+            <div class="card-label">توان تولیدی کل:</div>
+            <div class="card-value">۴٫۸۵ MW</div>
+            <div class="card-sub">راندمان آرایه: ۹۸٫۴٪</div>
+        </div>
+
+        <div class="card cyan">
+            <div class="card-label">شدت تابش خورشید:</div>
+            <div class="card-value">۹۶۰ W/m²</div>
+            <div class="card-sub">سنسور پیستگاهی فعال</div>
+        </div>
+
+        <div class="card green">
+            <div class="card-label">دمای میانگین سلول‌ها:</div>
+            <div class="card-value">۴۲.۵ °C</div>
+            <div class="card-sub">ضریب اتلاف حرارتی نرمال</div>
         </div>
 
         <div class="card">
-            <div class="card-title">فرمان‌های کنترلی لبه سخت‌افزاری (HIL)</div>
-            <button class="btn" onclick="triggerAction('SHADOW')">⛅ اعمال سناریوی سایه‌اندازی جزئی (Partial Shading)</button>
-            <button class="btn btn-danger" onclick="triggerAction('HOTSPOT')">🚨 شبیه‌سازی نقطه داغ (Hot-Spot) در استرینگ ۴</button>
-            <button class="btn" onclick="triggerAction('ISLAND')">⚡ آزمون قطع اتصال شبکه سراسری (Anti-Islanding)</button>
-            <div class="console" id="logBox" style="margin-top: 10px;">
-                <div>[سیستم] اتصال بی‌درنگ به مدل دینامیکی اینورتر برقرار است.</div>
-            </div>
+            <div class="card-label">الگوریتم ردیابی MPPT:</div>
+            <div class="card-value" style="font-size: 1.25rem;">ANFIS فعال</div>
+            <div class="card-sub">بهینه‌سازی دینامیک جریان-ولتاژ</div>
         </div>
     </div>
 
-    <!-- کادر اخطار رسمی -->
-    <div class="legal-box">
-        <h3>اخطار رسمی ممانعت از کپی‌برداری و پیاده‌سازی عملیاتی:</h3>
-        <p>هر زمان پل واقعی Simulink/HIL ،سنسورهای لبه هوش مصنوعی فدرال متصل شود، سیستم آماده دریافت اطلاعات زنده خواهد بود.</p>
+    <!-- تله‌متری فرکانسی و اینورتر -->
+    <div class="section-panel">
+        <div class="section-title">
+            <span>وضعیت پایداری اینورتر و هارمونیک THD</span>
+            <span style="color: var(--accent-green); font-family: monospace;">۱٫۱۸٪ (استاندارد IEEE 519)</span>
+        </div>
+        <div class="terminal-box">
+            [HIL CORE] Simulink Engine synced @ 100Hz | MPPT Tracking Efficiency: 99.2%<br>
+            [GRID SYNC] Phase Locked Loop (PLL) locked | Voltage: 400V ±0.8% | Frequency: 50.02 Hz<br>
+            [DISPATCH] Real-Time State Estimation & Optimal Power Dispatch ready.
+        </div>
+    </div>
+
+    <!-- اخطار رسمی و ممانعت از کپی برداری -->
+    <div class="notice-card">
+        <h3>⚠️ اخطار رسمی ممانعت از کپی‌برداری و پیاده‌سازی عملیاتی:</h3>
+        <p>هر زمان پل واقعی Simulink/HIL، سنسورهای لبه هوش مصنوعی فدرال متصل شود، سیستم آماده دریافت اطلاعات زنده خواهد بود.</p>
         <p>به جهت ممانعت از کپی‌برداری غیرمجاز و حفظ الگوریتم‌های راهبردی، این داشبورد صرفاً به عنوان یک دموی عمومی با امکانات محدودشده (Protected Demo) بارگذاری شده است.</p>
         <p>در صورت سفارش، این پلتفرم به شکلی اختصاصی بازطراحی و تحویل خواهد شد که با اتصال بی‌واسطه به لبه‌های واقعی سخت‌افزاری (Hardware-in-the-Loop - HIL)، پایگاه استنتاج فازی ANFIS و بلوک‌های مدل‌سازی‌شده در Simulink، پایدارترین پاسخ دینامیکی، هدایتی و بهینه را در شرایط عملیاتی فراهم آورد.</p>
     </div>
 
-    <div class="footer-card">
-        <p>طراحی و توسعه مهندسی: <strong>حسین لعلیان؛ رتبه ۳۲ کنکور دکتری</strong></p>
-        <p>رایانامه رسمی ارتباطات صنعتی: <code>ai.algorithms.ballistics@gmail.com</code></p>
+    <!-- شناسنامه رسمی و اعتباری -->
+    <div class="identity-box">
+        طراحی و توسعه مهندسی: <b>حسین لعلیان؛ رتبه ۳۲ کنکور دکتری</b> (برگرفته از پرپوزال سال ۱۳۹۵)<br>
+        رایانامه رسمی ارتباطات صنعتی: <span class="contact">ai.algorithms.ballistics@gmail.com</span>
     </div>
 
-    <script>
-        function triggerAction(type) {
-            const log = document.getElementById('logBox');
-            const time = new Date().toLocaleTimeString('fa-IR');
-            let text = "";
-            if(type === 'SHADOW') text = `[${time}] افت ولتاژ ناشی از سایه تشخیص داده شد. اجرای بهینه‌سازی فراابتکاری جهت پرش از ماکزیمم محلی.`;
-            else if(type === 'HOTSPOT') text = `[${time}] اخطار: افزایش حرارت غیرعادی در استرینگ ۴ ثبت شد. فرمان ایزولاسیون صادر شد.`;
-            else if(type === 'ISLAND') text = `[${time}] تغییر فرکانس شبکه ثبت شد. پروتکل پدافندی حفاظت جزیره‌ای فعال گردید.`;
-            const item = document.createElement('div');
-            item.innerText = text;
-            log.appendChild(item);
-            log.scrollTop = log.scrollHeight;
+    <!-- بخش دکمه‌های تعاملی عملیاتی و تجاری -->
+    <div class="interactive-section">
+
+        <!-- دکمه ۱ -->
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>🔘 دکمه ۱: این دکمه را بفشار تا متصل شوی به طرح توجیهی عملیاتی این پلتفرم!</span>
+            <span class="btn-icon">◀</span>
+        </button>
+        <div class="accordion-content">
+            <h4>کاهش فوری هزینه‌های دیماند و مدیریت بحران برق</h4>
+            <p><strong>معرفی پنل دیسپاچینگ و بهینه‌سازی بار ریزشبکه صنعتی (Microgrid-AI):</strong></p>
+            <p>صنایع کشور امروز با دو تهدید مالی و عملیاتی جدی در حوزه انرژی مواجهند:</p>
+            <ul>
+                <li><strong>۱. خسارت توقف خط تولید:</strong> ناشی از محدودیت‌ها و قطعی‌های برنامه‌ریزی‌شده برق سراسری.</li>
+                <li><strong>۲. قبوض سرسام‌آور:</strong> ناشی از جرایم تجاوز از دیماند قراردادی و تعرفه‌های تصاعدی ساعات اوج بار (پیک).</li>
+            </ul>
+            <p><strong>راهکار عملیاتی:</strong> پیاده‌سازی مغز متفکر نرم‌افزاری روی شبکه برق داخلی کارخانه برای تثبیت مصرف، حذف جریمه دیماند و اولویت‌بندی مصرف ارزان‌ترین منبع برق در هر ساعت از شبانه‌روز.</p>
+            <h4>این داشبورد روی شبکه چه کاری انجام می‌دهد؟</h4>
+            <p>این پلتفرم کنترل و مانیتورینگ بلادرنگ (Real-Time) شامل دو رکن اصلی است:</p>
+            <ul>
+                <li><strong>حذف هوشمند پیک مصرف (Peak Shaving):</strong> زمانی که مصرف خطوط به سقف دیماند مجاز نزدیک می‌شود، پنل بلافاصله باتری‌ها (BESS) یا ژنراتور پشتیبان را وارد مدار می‌کند تا از شبکه سراسری جریمه دیماند دریافت نشود.</li>
+                <li><strong>تخصیص اقتصادی منابع انرژی:</strong> در هر لحظه، بسته به تعرفه شبکه و پیش‌بینی تابش خورشید، ارزان‌ترین ترکیب منابع (پنل خورشیدی، باتری، ژنراتور اختصاصی یا برق شبکه) را وارد خط می‌کند.</li>
+            </ul>
+        </div>
+
+        <!-- دکمه ۲ -->
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>🔘 دکمه ۲: این دکمه را بفشار تا متصل شوی به مکانیزم کاری و ارزش پیشنهادی!</span>
+            <span class="btn-icon">◀</span>
+        </button>
+        <div class="accordion-content">
+            <p><strong>مسئله روز صنعت:</strong> تحمیل خسارات ناشی از قطعی برق تابستان، جرایم سنگین تجاوز از دیماند، و افزایش پلکانی تعرفه اوج بار شبکه.</p>
+            <h4>راهکار سامانه ما:</h4>
+            <ul>
+                <li><strong>دیده‌بانی یکپارچه:</strong> پایش و مدل‌سازی در لحظه بار خطوط، تولید نیروگاه خورشیدی، سطح شارژ باتری‌ها (SOC) و ژنراتورهای پشتیبان.</li>
+                <li><strong>حذف پیک مصرف (Peak Shaving):</strong> مهار خودکار دیماند فراتر از مرز مجاز از طریق تخلیه هوشمند باتری و مدیریت ژنراتور اختصاصی جهت حذف صددرصدی جرایم دیماند.</li>
+                <li><strong>دیسپاچینگ اقتصادی (Economic Dispatch):</strong> تخصیص بهینه منابع تولید در هر ساعت بر پایه کمترین بهای تمام‌شده کیلووات‌ساعت مصرفی.</li>
+                <li><strong>ارتباط مستقیم صنعتی:</strong> قابلیت اتصال خروجی پلتفرم از طریق Industrial IoT و پروتکل‌های استاندارد صنعتی (Modbus/MQTT) به سامانه‌های SCADA و PLCها جهت صدور فرامین کنترلی.</li>
+            </ul>
+        </div>
+
+        <!-- دکمه ۳ -->
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>🔘 دکمه ۳: این دکمه را بفشار تا متصل شوی به مسیر عملیاتی این پنل!</span>
+            <span class="btn-icon">◀</span>
+        </button>
+        <div class="accordion-content">
+            <ul>
+                <li><strong>دیده‌بانی چندمنظوره:</strong> سیستم ما در لحظه پارامترهای بار مصرفی خطوط تولید، پیش‌بینی تولید خورشیدی، وضعیت شارژ باتری‌ها (BESS) و وضعیت ژنراتورهای گازسوز/دیزلی را مانیتور می‌کند.</li>
+                <li><strong>الگوریتم کاهش دیماند اوج (Peak Shaving):</strong> وقتی مصرف کارخانه به مرز دیماند جریمه‌دار نزدیک می‌شود یا در ساعات پیک گران‌قیمت شبکه هستیم، سیستم فوراً و خودکار، باتری‌ها و منابع پشتیبان را وارد مدار می‌کند تا سقف مصرف از شبکه افزایش نیابد.</li>
+                <li><strong>دیسپاچینگ بهینه اقتصادی:</strong> مشخص می‌کند در هر ساعت مشخص، برق از کدام منبع تأمین شود (خورشیدی مستقیم، تخلیه باتری، ژنراتور اختصاصی یا شبکه سراسری) تا بهای تمام‌شده هر کیلووات‌ساعت مصرفی خط به کمترین حد ممکن برسد.</li>
+                <li><strong>خروجی آماده کنترل:</strong> این داشبورد فقط یک صفحه نمایش نیست؛ API و خروجی‌های فرمانی آن می‌توانند مستقیماً به PLCها، سیستم‌های SCADA، و رله‌های کنترلی کارخانه فرمان قطع و وصل یا تغییر ست‌پوینت اینورترها را صادر کنند.</li>
+            </ul>
+        </div>
+
+        <!-- دکمه ۴ -->
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>🔘 دکمه ۴: این دکمه را بفشار تا متصل شوی به نکات کلیدی قرارداد!</span>
+            <span class="btn-icon">◀</span>
+        </button>
+        <div class="accordion-content">
+            <ol>
+                <li><strong>محدوده مسئولیت (Disclaimer):</strong> قید می‌شود که عملکرد سامانه بر مبنای صحت داده‌های سنسورها و ادوات سخت‌افزاری کارخانه است و اختلال فیزیکی تجهیزات (نظیر سوختن اینورتر یا خطای تابلوی برق) خارج از مسئولیت پلتفرم هوشمند است.</li>
+                <li><strong>محرمانگی داده‌ها (NDA):</strong> داده‌های تولید، مصرف بار خطوط و الگوهای مصرف کارخانه محرمانه تلقی شده و حفظ امنیت آن تضمین می‌گردد.</li>
+                <li><strong>فاز پایلوت مشروط:</strong> برای شفافیت کار، یک فاز آزمایش ۱ ماهه (Proof of Concept) با تعریف معیارهای ارزیابی (KPI مشخص مثل میزان درصد پیک شیوینگ محقق‌شده) توافق شود.</li>
+            </ol>
+        </div>
+
+        <!-- دکمه ۵ -->
+        <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>🔘 دکمه ۵: بفشار این دکمه را تا متصل شوی به مدل‌های پیشنهادی ما!</span>
+            <span class="btn-icon">◀</span>
+        </button>
+        <div class="accordion-content">
+            <h4>مدل اول: قرارداد تسهیم سود / صرفه‌جویی (Shared Savings / ESCO)</h4>
+            <p>اگر تمایل به سرمایه‌گذاری اولیه سنگین ندارید، ما پلتفرم را برای دوره ۳ تا ۶ ماه به صورت پایلوت روی سایت شما بالا می‌آوریم. هر میزان پولی که از محل کاهش جرایم دیماند، حذف جریمه پیک بار و بهینه‌سازی مصرف دیزل/باتری در قبض‌های برق شما صرفه‌جویی شد، طبق کنتور مرجع، ۳۰ تا ۴۰ درصد سود صرفه‌جویی به ما تعلق می‌گیرد و بقیه مستقیماً در جیب شما می‌ماند.</p>
+            
+            <h4>مدل دوم: فروش لایسنس نرم‌افزاری سازمانی (Enterprise License + Annual Maintenance)</h4>
+            <p>واگذاری لایسنس کامل صنعتی نرم‌افزار به همراه سفارشی‌سازی کنترلرها، ادغام با اسکادا و قرارداد پشتیبانی و به‌روزرسانی سالیانه الگوریتم‌های ANFIS و پیش‌بینی بار.</p>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function toggleAccordion(btn) {
+        btn.classList.toggle("active");
+        const content = btn.nextElementSibling;
+        if (content.style.display === "block") {
+            content.style.display = "none";
+        } else {
+            content.style.display = "block";
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
